@@ -9,6 +9,10 @@
 		"emulator-account": {
 			"address": "f8d6e0586b0a20c7",
 			"key": "b2f49acd4f99eac59c8c478065753a9ae9de4bc4623de98761996276a08037f2"
+		},
+		"jerry": {
+			"address": "f8d6e0586b0a20c8",
+			"key": "b2f49acd4f99eac59c8c478065753a9ae9de4bc4623de98761996276a08037f0"
 		}
 	}
 }
