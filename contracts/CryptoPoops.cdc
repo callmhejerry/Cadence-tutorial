@@ -1,11 +1,18 @@
+
 pub contract CryptoPoops {
     pub var totalSupply:UInt64
 
     pub resource NFT {
+        pub let name: String;
+        pub let favoriteFood:String;
+        pub let luckyNumber: UInt64;
         pub let id: UInt64
 
-        init(){
-            self.id = self.uuid
+        init(_name: String, _favoriteFood:String, _luckyNumber:UInt64){
+            self.id = self.uuid;
+            self.favoriteFood = _favoriteFood;
+            self.name = _name;
+            self.luckyNumber = _luckyNumber;
         }
     }
 
@@ -26,8 +33,8 @@ pub contract CryptoPoops {
             return <- nft
         }
 
-        pub fun viewNft(nftID: UInt64): &NFT?{
-            return &self.ownedNFTs[nftID] as &NFT?
+        pub fun viewNft(nftID: UInt64): &NFT{
+            return (&self.ownedNFTs[nftID] as &NFT?)!
         }
 
         pub fun getIDs():[UInt64] {
@@ -43,16 +50,24 @@ pub contract CryptoPoops {
         }
     }
 
+
+    pub resource Minter{
+        pub fun createNft(name:String, favoriteFood:String, luckyNumber:UInt64): @NFT{
+            return <- create NFT(
+            _name:name,
+            _favoriteFood:favoriteFood,
+            _luckyNumber : luckyNumber,
+            );
+        }
+    }
     
 
-    pub fun createNFT():@NFT{
-        return <- create NFT()
-    }
 
     pub fun createEmptyCollection():@Collection {
         return <- create Collection()
     }
     init() {
         self.totalSupply = 0
+        self.account.save(<- create Minter(), to: /storage/Minter);
     }
 }

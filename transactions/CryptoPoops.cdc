@@ -1,4 +1,4 @@
-import CryptoPoops from "../contracts/CryptoPoops.cdc"
+import CryptoPoops from 0x179b6b1cb6755e31
 
 transaction(){
     prepare(signer:AuthAccount) {
