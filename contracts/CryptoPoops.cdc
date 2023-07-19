@@ -1,8 +1,15 @@
+import NonFungibleToken from 0xf8d6e0586b0a20c7
+pub contract CryptoPoops : NonFungibleToken{
 
-pub contract CryptoPoops {
+    // EVENTS
+    pub event ContractInitialized()
+    pub event Withdraw(id: UInt64, from: Address?)
+    pub event Deposit(id: UInt64, to: Address?)
+
+    // STATE VARIABLES
     pub var totalSupply:UInt64
 
-    pub resource NFT {
+    pub resource NFT : NonFungibleToken.INFT{
         pub let name: String;
         pub let favoriteFood:String;
         pub let luckyNumber: UInt64;
@@ -16,25 +23,35 @@ pub contract CryptoPoops {
         }
     }
 
-    pub resource interface ICollection {
-        pub fun getIDs():[UInt64]
-        pub fun deposit(token:@NFT)
-    }
+    // pub resource interface ICollection {
+    //     pub fun getIDs():[UInt64]
+    //     pub fun deposit(token:@NFT)
+    // }
 
-    pub resource Collection:ICollection{
-        pub var ownedNFTs: @{UInt64 : NFT}
+    pub resource Collection:NonFungibleToken.Provider, NonFungibleToken.Receiver, NonFungibleToken.CollectionPublic {
 
-        pub fun deposit(token:@NFT) {
-            self.ownedNFTs[token.id] <-! token
+        pub var ownedNFTs: @{UInt64 : NonFungibleToken.NFT}
+
+        pub fun deposit(token: @NonFungibleToken.NFT) {
+            let nft: @CryptoPoops.NFT <- token as! @NFT;
+            emit Deposit(id: nft.id, to: self.owner?.address);
+            self.ownedNFTs[nft.id] <-! nft
         }
 
-        pub fun withdraw(withdrawID: UInt64): @NFT {
-            let nft: @CryptoPoops.NFT <- self.ownedNFTs.remove(key: withdrawID) ?? panic("This NFT does not exist in this Collection.")
+        pub fun withdraw(withdrawID: UInt64): @NonFungibleToken.NFT{
+            let nft: @NonFungibleToken.NFT <- self.ownedNFTs.remove(key: withdrawID) ?? panic("This NFT does not exist in this Collection.")
+            emit Withdraw(id: withdrawID, from :self.owner?.address);
             return <- nft
         }
 
-        pub fun viewNft(nftID: UInt64): &NFT{
-            return (&self.ownedNFTs[nftID] as &NFT?)!
+
+        pub fun borrowNFT(id: UInt64): &NonFungibleToken.NFT{
+            return (&self.ownedNFTs[id] as &NonFungibleToken.NFT?)!
+        }
+
+        pub fun borrowAuthNFT(id: UInt64): &NFT {
+            let ref = (&self.ownedNFTs[id] as auth &NonFungibleToken.NFT?)!
+            return ref as! &NFT
         }
 
         pub fun getIDs():[UInt64] {
@@ -48,7 +65,7 @@ pub contract CryptoPoops {
         destroy (){
             destroy self.ownedNFTs
         }
-    }
+}
 
 
     pub resource Minter{
@@ -63,11 +80,12 @@ pub contract CryptoPoops {
     
 
 
-    pub fun createEmptyCollection():@Collection {
+    pub fun createEmptyCollection():@NonFungibleToken.Collection {
         return <- create Collection()
     }
     init() {
         self.totalSupply = 0
         self.account.save(<- create Minter(), to: /storage/Minter);
+        emit ContractInitialized();
     }
 }
