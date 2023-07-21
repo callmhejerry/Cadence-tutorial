@@ -2,17 +2,38 @@
 	"networks": {
 		"emulator": "127.0.0.1:3569",
 		"mainnet": "access.mainnet.nodes.onflow.org:9000",
-		"sandboxnet": "access.sandboxnet.nodes.onflow.org:9000",
 		"testnet": "access.devnet.nodes.onflow.org:9000"
 	},
 	"accounts": {
 		"emulator-account": {
 			"address": "f8d6e0586b0a20c7",
-			"key": "b2f49acd4f99eac59c8c478065753a9ae9de4bc4623de98761996276a08037f2"
+			"key": "7093d947e11210f14576defc1a26b5c3c5c4bc43d028a19ea06ce13cb6039a07"
 		},
-		"jerry": {
-			"address": "f8d6e0586b0a20c8",
-			"key": "b2f49acd4f99eac59c8c478065753a9ae9de4bc4623de98761996276a08037f0"
+		"testnet-account": {
+			"address": "0xb8cd3153e48ea418",
+			"key":{
+				"type": "hex",
+				"index": 0,
+				"signatureAlgorithm": "ECDSA_P256",
+				"hashAlgorithm": "SHA3_256",
+				"privateKey": "e4e1e1c5b37440214b82070fba3ac154dc19f4f4f7f48ed79d17bede3cbeceae"
+			}
+		}
+	},
+	"contracts": {
+		"ExampleNFT":"./contracts/ExampleNFT.cdc",
+		"NonFungibleToken": {
+			"source":"./contracts/NFTContract.cdc",
+			"aliases": {
+				"testnet":"0x631e88ae7f1d7c20"
+			}
+		}
+	},
+	"deployments" : {
+		"testnet":{
+			"testnet-account":[
+				"ExampleNFT"
+			]
 		}
 	}
 }
